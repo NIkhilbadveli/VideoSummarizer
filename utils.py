@@ -5,7 +5,7 @@ import os
 class FrameExtractor:
     """Uses OpenCV to extract ExtractedFrames of a video at a specified fps and save them into the path given."""
 
-    def extract_frames(self, video_path, frames_path, n=10):
+    def extract_frames(self, video_path, frames_path, n=10, max_num_frames=180):
         # n is the number of ExtractedFrames from which you select 1 frame. So, once every n ExtractedFrames.
 
         # Create directory if frames_path doesn't exist
@@ -13,6 +13,10 @@ class FrameExtractor:
             if not os.path.exists(frames_path):
                 print('Creating the directory to save ExtractedFrames')
                 os.makedirs(frames_path)
+            else:
+                # clear the directory contents
+                for f in os.listdir(frames_path):
+                    os.remove(os.path.join(frames_path, f))
         except OSError:
             print('Error! Could not create a directory')
 
@@ -33,7 +37,7 @@ class FrameExtractor:
                 if current_frame_no % n == 0:
                     cv2.imwrite(frames_path + '/frame_' + str(frames_captured) + '.jpg', frame)
                     frames_captured += 1
-            else:
+            elif frames_captured == max_num_frames or (not grabbed):
                 break
             current_frame_no += 1
         print('Extracting ExtractedFrames done...')
